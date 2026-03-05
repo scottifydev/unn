@@ -4,6 +4,7 @@ import Masthead from "@/components/layout/masthead";
 import NavBar from "@/components/layout/nav-bar";
 import Footer from "@/components/layout/footer";
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
+import { AuthListener } from "@/components/auth/auth-listener";
 import "./globals.css";
 
 const BASE_URL = "https://underworldnewsnetwork.org";
@@ -81,6 +82,7 @@ export default function RootLayout({
         <NavBar />
         {children}
         <Footer />
+        <AuthListener />
         <AnalyticsProvider />
       </body>
     </html>
