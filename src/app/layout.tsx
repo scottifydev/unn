@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Cinzel, Crimson_Text, Barlow_Condensed } from "next/font/google";
+import Masthead from "@/components/layout/masthead";
+import NavBar from "@/components/layout/nav-bar";
+import Footer from "@/components/layout/footer";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -36,7 +39,10 @@ export default function RootLayout({
       <body
         className={`${cinzel.variable} ${crimson.variable} ${barlow.variable} font-crimson`}
       >
+        <Masthead />
+        <NavBar />
         {children}
+        <Footer />
       </body>
     </html>
   );
