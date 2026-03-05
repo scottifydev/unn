@@ -3,7 +3,10 @@ import { Cinzel, Crimson_Text, Barlow_Condensed } from "next/font/google";
 import Masthead from "@/components/layout/masthead";
 import NavBar from "@/components/layout/nav-bar";
 import Footer from "@/components/layout/footer";
+import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
 import "./globals.css";
+
+const BASE_URL = "https://underworldnewsnetwork.org";
 
 const cinzel = Cinzel({
   variable: "--font-cinzel",
@@ -25,8 +28,43 @@ const barlow = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "UNN — Underworld News Network",
+  metadataBase: new URL(BASE_URL),
+  title: {
+    default: "UNN — Underworld News Network",
+    template: "%s | UNN — Underworld News Network",
+  },
   description: "All the news that's unfit for daylight.",
+  keywords: [
+    "underworld news",
+    "supernatural news",
+    "vampire affairs",
+    "occult markets",
+    "demon politics",
+    "UNN",
+  ],
+  authors: [{ name: "Underworld News Network" }],
+  creator: "Underworld News Network",
+  publisher: "Underworld News Network",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: BASE_URL,
+    siteName: "Underworld News Network",
+    title: "UNN — Underworld News Network",
+    description: "All the news that's unfit for daylight.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UNN — Underworld News Network",
+    description: "All the news that's unfit for daylight.",
+  },
+  alternates: {
+    canonical: BASE_URL,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -43,6 +81,7 @@ export default function RootLayout({
         <NavBar />
         {children}
         <Footer />
+        <AnalyticsProvider />
       </body>
     </html>
   );

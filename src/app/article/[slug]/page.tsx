@@ -3,10 +3,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleBody } from "@/components/article/article-body";
+import { ArticleJsonLd } from "@/components/seo/json-ld";
 import { CouncilAdvisory } from "@/components/sidebar/council-advisory";
 import { Trending } from "@/components/sidebar/trending";
 import { AdUnit } from "@/components/sidebar/ad-unit";
 import type { Database, AdvisoryLevel } from "@/lib/supabase/database.types";
+
+const BASE_URL = "https://underworldnewsnetwork.org";
 
 type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
 type SectionRow = Database["public"]["Tables"]["sections"]["Row"];
@@ -75,11 +78,38 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticle(slug);
 
-  if (!article) return { title: "Article Not Found — UNN" };
+  if (!article) return { title: "Article Not Found" };
+
+  const section = article.sections;
 
   return {
-    title: `${article.headline} — UNN`,
+    title: article.headline,
     description: article.dek ?? undefined,
+    openGraph: {
+      type: "article",
+      title: article.headline,
+      description: article.dek ?? undefined,
+      url: `${BASE_URL}/article/${slug}`,
+      siteName: "Underworld News Network",
+      ...(section && { section: section.name }),
+      ...(article.published_at && {
+        publishedTime: article.published_at,
+      }),
+      ...(article.updated_at && {
+        modifiedTime: article.updated_at,
+      }),
+      ...(article.featured_image_url && {
+        images: [{ url: article.featured_image_url }],
+      }),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.headline,
+      description: article.dek ?? undefined,
+    },
+    alternates: {
+      canonical: `${BASE_URL}/article/${slug}`,
+    },
   };
 }
 
@@ -105,6 +135,16 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <main className="min-h-screen">
+      <ArticleJsonLd
+        headline={article.headline}
+        description={article.dek ?? undefined}
+        slug={article.slug}
+        authorName={author?.display_name ?? "UNN Staff"}
+        sectionName={section?.name ?? "News"}
+        publishedAt={article.published_at}
+        updatedAt={article.updated_at}
+        imageUrl={article.featured_image_url ?? undefined}
+      />
       <div className="mx-auto max-w-[1380px] px-3 sm:px-4">
         <div className="mt-6 grid grid-cols-1 gap-6 sm:mt-10 sm:gap-10 lg:grid-cols-[minmax(0,680px)_300px] lg:justify-center">
           {/* Article Column */}

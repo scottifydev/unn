@@ -30,6 +30,7 @@ export function StandardCard({
             <img
               src={imageUrl}
               alt=""
+              loading="lazy"
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (

@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { StandardCard } from "@/components/cards/standard-card";
 import type { Database } from "@/lib/supabase/database.types";
 
+const BASE_URL = "https://underworldnewsnetwork.org";
+
 type SectionRow = Database["public"]["Tables"]["sections"]["Row"];
 type ArticleRow = Database["public"]["Tables"]["articles"]["Row"];
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
@@ -45,13 +47,30 @@ export async function generateMetadata({
   const { slug } = await params;
   const section = await getSection(slug);
 
-  if (!section) return { title: "Section Not Found — UNN" };
+  if (!section) return { title: "Section Not Found" };
+
+  const description =
+    section.description ??
+    `Latest ${section.name} coverage from the Underworld News Network.`;
 
   return {
-    title: `${section.name} — UNN`,
-    description:
-      section.description ??
-      `Latest ${section.name} coverage from the Underworld News Network.`,
+    title: section.name,
+    description,
+    openGraph: {
+      type: "website",
+      title: section.name,
+      description,
+      url: `${BASE_URL}/section/${slug}`,
+      siteName: "Underworld News Network",
+    },
+    twitter: {
+      card: "summary",
+      title: section.name,
+      description,
+    },
+    alternates: {
+      canonical: `${BASE_URL}/section/${slug}`,
+    },
   };
 }
 

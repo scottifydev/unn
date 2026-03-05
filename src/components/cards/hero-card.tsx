@@ -29,6 +29,7 @@ export function HeroCard({
           <img
             src={imageUrl}
             alt=""
+            loading="eager"
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
