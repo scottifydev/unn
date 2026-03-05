@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EngravingPattern } from "@/components/ui/engraving-pattern";
 
 interface HeroCardProps {
   headline: string;
@@ -31,25 +32,7 @@ export function HeroCard({
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
-          <div
-            className="absolute inset-0 opacity-[0.08]"
-            style={{
-              backgroundImage: `repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 4px,
-                currentColor 4px,
-                currentColor 5px
-              ),
-              repeating-linear-gradient(
-                -45deg,
-                transparent,
-                transparent 4px,
-                currentColor 4px,
-                currentColor 5px
-              )`,
-            }}
-          />
+          <EngravingPattern />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-void" />
         <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 sm:p-6 sm:pb-8">

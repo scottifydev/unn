@@ -39,6 +39,7 @@ export interface Database {
           bio?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       sections: {
         Row: {
@@ -71,6 +72,7 @@ export interface Database {
           active?: boolean;
           created_at?: string;
         };
+        Relationships: [];
       };
       articles: {
         Row: {
@@ -124,6 +126,22 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "articles_section_id_fkey";
+            columns: ["section_id"];
+            isOneToOne: false;
+            referencedRelation: "sections";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "articles_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       ticker_items: {
         Row: {
@@ -150,6 +168,7 @@ export interface Database {
           expires_at?: string | null;
           created_at?: string;
         };
+        Relationships: [];
       };
       council_advisories: {
         Row: {
@@ -179,6 +198,7 @@ export interface Database {
           issued_at?: string;
           created_at?: string;
         };
+        Relationships: [];
       };
       ads: {
         Row: {
@@ -220,6 +240,7 @@ export interface Database {
           active?: boolean;
           created_at?: string;
         };
+        Relationships: [];
       };
       trending: {
         Row: {
@@ -246,14 +267,33 @@ export interface Database {
           active?: boolean;
           created_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "trending_article_id_fkey";
+            columns: ["article_id"];
+            isOneToOne: false;
+            referencedRelation: "articles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      get_user_role: {
+        Args: Record<PropertyKey, never>;
+        Returns: UserRole;
+      };
+      has_role: {
+        Args: { required: UserRole };
+        Returns: boolean;
+      };
+    };
     Enums: {
       user_role: UserRole;
       article_type: ArticleType;
       article_status: ArticleStatus;
     };
+    CompositeTypes: Record<string, never>;
   };
 }

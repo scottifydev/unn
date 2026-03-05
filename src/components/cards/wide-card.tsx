@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EngravingPattern } from "@/components/ui/engraving-pattern";
 
 interface WideCardProps {
   headline: string;
@@ -32,25 +33,7 @@ export function WideCard({
               className="absolute inset-0 w-full h-full object-cover"
             />
           ) : (
-            <div
-              className="absolute inset-0 opacity-[0.08]"
-              style={{
-                backgroundImage: `repeating-linear-gradient(
-                  45deg,
-                  transparent,
-                  transparent 4px,
-                  currentColor 4px,
-                  currentColor 5px
-                ),
-                repeating-linear-gradient(
-                  -45deg,
-                  transparent,
-                  transparent 4px,
-                  currentColor 4px,
-                  currentColor 5px
-                )`,
-              }}
-            />
+            <EngravingPattern />
           )}
         </div>
         <div className="flex-1 p-4 flex flex-col justify-center">
