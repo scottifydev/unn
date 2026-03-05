@@ -19,7 +19,7 @@ export default function NavBar() {
 
   return (
     <nav className="border-b border-seam bg-chamber">
-      <div className="mx-auto flex max-w-[1380px] items-center justify-center gap-6 px-4 py-2">
+      <div className="scrollbar-none mx-auto flex max-w-[1380px] items-center gap-4 overflow-x-auto px-4 py-2 sm:justify-center sm:gap-6">
         {SECTIONS.map(({ label, slug }) => {
           const href = `/section/${slug}`;
           const isActive = pathname === href || pathname.startsWith(`${href}/`);
@@ -28,7 +28,7 @@ export default function NavBar() {
             <Link
               key={slug}
               href={href}
-              className={`font-barlow text-nav font-medium uppercase tracking-[0.14em] transition-colors ${
+              className={`whitespace-nowrap font-barlow text-nav font-medium uppercase tracking-[0.14em] transition-colors ${
                 isActive
                   ? "border-b-2 border-garnet pb-px text-paper"
                   : "text-stone hover:text-parchment"

@@ -45,27 +45,27 @@ export default function Masthead() {
 
   return (
     <header className="sticky top-0 z-[100] border-t-2 border-garnet border-b border-b-seam bg-void">
-      <div className="mx-auto grid h-[68px] max-w-[1380px] grid-cols-3 items-center px-4">
-        <div className="flex items-center gap-4">
+      <div className="mx-auto flex h-[52px] max-w-[1380px] items-center justify-between px-4 sm:h-[60px] lg:grid lg:h-[68px] lg:grid-cols-3">
+        <div className="hidden items-center gap-4 lg:flex">
           <span className="font-barlow text-nav font-medium uppercase tracking-[0.14em] text-stone">
             {dateString}
           </span>
         </div>
 
-        <div className="flex flex-col items-center justify-center text-center">
-          <span className="font-cinzel text-lg font-bold tracking-[0.12em] text-paper">
-            UNDERWORLD NEWS NETWORK
+        <div className="flex flex-col items-center justify-center text-center max-lg:flex-1">
+          <span className="font-cinzel text-[32px] font-black uppercase leading-none tracking-[0.08em] text-paper sm:text-[48px] lg:text-[72px]">
+            UNN
           </span>
-          <span className="font-barlow text-[9px] font-light uppercase tracking-[0.2em] text-ash">
-            Est. 1347 &mdash; All the news that&apos;s unfit for daylight.
+          <span className="hidden font-barlow text-[9px] font-light uppercase tracking-[0.2em] text-ash sm:block">
+            Underworld News Network
           </span>
         </div>
 
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-3 sm:gap-4">
           <LiveBug />
           <button
             type="button"
-            className="font-barlow text-nav font-medium uppercase tracking-[0.14em] text-stone transition-colors hover:text-parchment"
+            className="hidden font-barlow text-nav font-medium uppercase tracking-[0.14em] text-stone transition-colors hover:text-parchment sm:block"
           >
             Subscribe
           </button>

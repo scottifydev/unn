@@ -43,9 +43,9 @@ export default function Home() {
     <main className="min-h-screen">
       <BreakingTicker items={TICKER_ITEMS} />
 
-      <div className="mx-auto max-w-[1380px] px-4">
+      <div className="mx-auto max-w-[1380px] px-3 sm:px-4">
         {/* Hero + Sidebar Teasers */}
-        <section className="mt-6 grid grid-cols-1 gap-px bg-seam lg:grid-cols-[1fr_340px]">
+        <section className="mt-4 grid grid-cols-1 gap-px bg-seam sm:mt-6 lg:grid-cols-[1fr_340px]">
           <HeroCard
             headline={SAMPLE_ARTICLES[0].headline}
             dek={SAMPLE_ARTICLES[0].dek}
@@ -63,11 +63,11 @@ export default function Home() {
         </section>
 
         {/* Latest Section */}
-        <section className="mt-10">
-          <h2 className="mb-4 border-b border-seam pb-2 font-cinzel text-xl font-bold text-paper">
+        <section className="mt-6 sm:mt-10">
+          <h2 className="mb-3 border-b border-seam pb-2 font-cinzel text-lg font-bold text-paper sm:mb-4 sm:text-xl">
             Latest
           </h2>
-          <div className="grid grid-cols-1 gap-px bg-seam md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-px bg-seam sm:grid-cols-2 lg:grid-cols-3">
             {SAMPLE_ARTICLES.map((article) => (
               <StandardCard key={article.slug} {...article} />
             ))}
@@ -75,17 +75,17 @@ export default function Home() {
         </section>
 
         {/* Opinion Strip */}
-        <section className="mt-10">
-          <h2 className="mb-4 border-b border-seam pb-2 font-cinzel text-xl font-bold text-paper">
+        <section className="mt-6 sm:mt-10">
+          <h2 className="mb-3 border-b border-seam pb-2 font-cinzel text-lg font-bold text-paper sm:mb-4 sm:text-xl">
             Opinion
           </h2>
           <OpinionStrip items={OPINION_ITEMS} />
         </section>
 
         {/* Content + Sidebar */}
-        <section className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
+        <section className="mt-6 grid grid-cols-1 gap-6 sm:mt-10 sm:gap-10 lg:grid-cols-[1fr_300px]">
           <div>
-            <h2 className="mb-4 border-b border-seam pb-2 font-cinzel text-xl font-bold text-paper">
+            <h2 className="mb-3 border-b border-seam pb-2 font-cinzel text-lg font-bold text-paper sm:mb-4 sm:text-xl">
               Lead Story
             </h2>
             <article className="font-crimson text-body leading-[1.78] text-parchment">

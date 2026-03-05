@@ -23,7 +23,7 @@ export function HeroCard({
 }: HeroCardProps) {
   return (
     <Link href={`/article/${slug}`} className="group block">
-      <article className="relative bg-graphite overflow-hidden aspect-[16/9] min-h-[400px]">
+      <article className="relative bg-graphite overflow-hidden aspect-[4/3] min-h-[280px] sm:aspect-[16/9] sm:min-h-[400px]">
         {imageUrl ? (
           <img
             src={imageUrl}
@@ -52,7 +52,7 @@ export function HeroCard({
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-void" />
-        <div className="absolute bottom-0 left-0 right-0 p-6 pb-8">
+        <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 sm:p-6 sm:pb-8">
           <span
             className="font-barlow text-tag uppercase font-semibold inline-block mb-3"
             style={{ color: sectionColor }}
