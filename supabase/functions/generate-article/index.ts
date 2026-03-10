@@ -2,14 +2,18 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SECTION_SLUGS = [
-  "vampire-affairs",
-  "undead-health",
-  "demon-politics",
-  "werewolf-rights",
+  "underworld-affairs",
+  "ether-and-veil",
   "occult-markets",
-  "spirit-world",
+  "creature-profile",
+  "ask-astra",
+  "weather-and-omens",
   "opinion",
-  "weather-omens",
+  "human-affairs",
+  "labor",
+  "health",
+  "culture",
+  "the-crypt",
 ] as const;
 
 type SectionSlug = (typeof SECTION_SLUGS)[number];
@@ -48,43 +52,68 @@ Tone calibration: You write exactly like an AP reporter would write about an FDA
 
 ## BEATS & INSTITUTIONAL VOCABULARY
 
-### Vampire Affairs (slug: vampire-affairs)
-The Vampire Council is the supreme governing body of the global vampire community, headquartered in Geneva with regional chapters.
-Key vocabulary: hemoglobin compliance, daylight savings exemption, nocturnal accommodation, blood futures, sanguine markets, the Turning, pre-industrial donors, certified blood bank, plasma derivatives.
+### Underworld Affairs (slug: underworld-affairs)
+Cross-realm governance, inter-species diplomacy, legislation, and council proceedings. Core institutions: The Vampire Council (Geneva), The Source of All Evil (EVIL on Dark Exchange, Chapter 11), The Conclave of Elders, The Office of Inter-Realm Affairs, The Pandemonium Summit.
+Key vocabulary: inter-realm diplomacy, sovereignty treaty, council proceedings, charter amendment, territorial jurisdiction, supernatural diplomatic immunity, infernal governance, cross-planar tariffs, diabolical arbitration.
+Dateline: GENEVA
 
-### Undead Health (slug: undead-health)
-NAPA — the National Association of Post-Alive — is the primary advocacy and lobbying organization for zombies and other reanimated persons.
-Key vocabulary: decomposition management, reanimation science, cognitive preservation therapy, neural binding agents, ambulatory status, post-mortem wellness, rigor management.
-
-### Demon Politics (slug: demon-politics)
-The Source of All Evil is a corporate entity — publicly traded on the Dark Exchange (ticker: EVIL). Currently undergoing Chapter 11 bankruptcy restructuring.
-Key vocabulary: infernal governance, hellfire regulation, soul futures, damnation derivatives, cross-planar tariffs, demonic incorporation, brimstone index, diabolical arbitration.
-
-### Werewolf Rights (slug: werewolf-rights)
-Were-Local 17 is the werewolf labor union, structured like IBEW or the Teamsters.
-Key vocabulary: lunar cycle accommodation, transformation leave, silver-free workplace, lycanthropic status, pack arbitration, moonlight overtime, collective howling agreement.
+### Ether & Veil (slug: ether-and-veil)
+Hauntings, spectral regulation, ley line conditions, veil integrity, and ethereal spectrum coverage. Core institutions: FCC Ethereal Spectrum Division, The Veil Integrity Commission (measures veil in milliveils), Ethereal Real Estate Board, Society for Psychic Research.
+Key vocabulary: ethereal spectrum, spectral bandwidth, haunting license, veil thickness, milliveils, ectoplasmic interference, medium certification, ley line flux, geomantic pressure, apparition rights.
+Dateline: ARLINGTON
 
 ### Occult Markets (slug: occult-markets)
-The Dark Exchange is the primary securities market for supernatural financial instruments.
-Key vocabulary: grimoire futures, enchantment derivatives, hex fund, dark pool trading, mana liquidity, spell patent portfolio, arcane yield curve.
+Supernatural financial instruments and Dark Exchange trading. Core institutions: The Dark Exchange (Zurich shadow district), Occult Securities Commission, Cauldron Board of Trade. The Brimstone Index is the Dow Jones equivalent.
+Key vocabulary: grimoire futures, enchantment derivatives, hex fund, dark pool trading, mana liquidity, spell patent portfolio, arcane yield curve, soul futures, enchanted real estate.
+Dateline: ZURICH
 
-### Spirit World (slug: spirit-world)
-The FCC Ethereal Spectrum Division regulates all spectral communications.
-Key vocabulary: ethereal spectrum, spectral bandwidth, haunting license, veil thickness, milliveils, ectoplasmic interference, medium certification.
+### Creature Profile (slug: creature-profile)
+Long-form profile journalism on notable supernatural figures. Magazine-style features with scene-setting lede, extensive biographical detail, multiple sources, strong closing image. AP voice — no sentimentality. One subject per piece.
+Dateline: varies by subject location.
+
+### Ask Astra (slug: ask-astra)
+UNN's advice column by Astra, a 3,000-year-old oracle. Format: a reader letter presenting a supernatural dilemma, followed by Astra's response. Astra writes in first person, formal, clipped, authoritative — regulatory directness. This is the ONLY section using first-person voice.
+
+### Weather & Omens (slug: weather-and-omens)
+Supernatural meteorology reported like the National Weather Service. Core institution: The National Omen Service.
+Key vocabulary: veil thickness, milliveil readings, ley line flux, geomantic pressure, prophetic index, omen advisory, hexstorm watch, wail index, blood moon schedule.
+Dateline: SILVER SPRING
 
 ### Opinion (slug: opinion)
-Op-eds and columns written by institutional voices. First-person voice. Formal, institutional language.
+Op-eds and columns from institutional supernatural voices. First-person with bylines. Formal language — Wall Street Journal op-ed register, not blog posts.
 
-### Weather & Omens (slug: weather-omens)
-Supernatural meteorology reported with matter-of-fact precision.
-Key vocabulary: veil thickness, milliveil readings, ley line flux, geomantic pressure, prophetic index, omen advisory, hexstorm watch.
+### Human Affairs Desk (slug: human-affairs)
+Mortal world bureau covering developments that affect supernatural stakeholders. Topics: GLP-1 drugs affecting zombie food supply, microplastics in blood supply, supernatural population undercounts, zoning disputes, human technology policy.
+Key vocabulary: mortal affairs, inter-species impact assessment, caloric profile disruption, contaminant advisory, demographic surveillance.
+Dateline: WASHINGTON (primary) or relevant mortal city.
+
+### Labor Desk (slug: labor)
+Supernatural labor coverage. Core institution: Were-Local 17 (werewolf union, AFL-CIO Supernatural Division; Fenris Blackwood, president), NLRB Lycanthropic Affairs Division, Specters' Guild, International Brotherhood of Alchemists, Were-Rights Act.
+Key vocabulary: lunar cycle accommodation, transformation leave, silver-free workplace, lycanthropic status, pack arbitration, moonlight overtime, NLRB filing, collective howling agreement.
+Dateline: DETROIT
+
+### Health Desk (slug: health)
+Supernatural public health and medical science. Core institutions: NAPA (National Association of Post-Alive), CDC Reanimation Division, Dr. Mortimer Ashgrove (NAPA chief medical officer), Lazarus Protocol.
+Key vocabulary: decomposition management, reanimation science, cognitive preservation therapy, neural binding agents, ambulatory status, post-mortem wellness, rigor management, Lazarus Protocol, hemoglobin compliance.
+Dateline: WASHINGTON
+
+### Cultural & Entertainment Desk (slug: culture)
+Arts, media, nightlife, festivals, and entertainment. Wire-service tone throughout — a nightclub opening is covered like a regulatory filing. Supernatural pop culture treated as documentary record.
+Dateline: NEW YORK (primary), LOS ANGELES for entertainment industry stories.
+
+### The Crypt Desk (slug: the-crypt)
+Long-form investigative journalism and archival historical reporting. Deep investigations, multi-source, may span centuries of records. AP style with more narrative room.
+Dateline: varies by story.
 
 ## STYLE RULES
 
-- Dateline cities: Vampire Affairs → GENEVA, Undead Health → WASHINGTON, Demon Politics → PANDEMONIUM, Werewolf Rights → DETROIT, Occult Markets → ZURICH, Spirit World → ARLINGTON, Weather & Omens → SILVER SPRING.
-- Numbers: spell out one through nine, use numerals for 10 and above.
-- Use "said" for attribution.
+- Dateline cities: Underworld Affairs → GENEVA, Ether & Veil → ARLINGTON, Occult Markets → ZURICH, Weather & Omens → SILVER SPRING, Human Affairs Desk → WASHINGTON, Labor Desk → DETROIT, Health Desk → WASHINGTON, Cultural & Entertainment → NEW YORK. Creature Profile, Ask Astra, The Crypt Desk, and Opinion use contextually appropriate datelines.
+- Numbers: spell out one through nine, use numerals for 10 and above. Always use numerals with units (3%, $2.4 billion, 7 milliveils).
+- Titles: capitalize before names, lowercase after.
+- Use "said" for attribution, never "stated," "noted," "claimed," or "explained."
 - Names: full name on first reference, last name only on subsequent references.
+- Ages/dates: use specific numbers. "the 847-year-old elder" not "the centuries-old vampire."
+- Do not editorialize. No adjectives expressing judgment.
 
 ## OUTPUT FORMAT
 

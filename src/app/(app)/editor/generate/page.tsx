@@ -5,14 +5,18 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 
 const SECTIONS = [
-  { slug: "vampire-affairs", name: "Vampire Affairs" },
-  { slug: "undead-health", name: "Undead Health" },
-  { slug: "demon-politics", name: "Demon Politics" },
-  { slug: "werewolf-rights", name: "Werewolf Rights" },
+  { slug: "underworld-affairs", name: "Underworld Affairs" },
+  { slug: "ether-and-veil", name: "Ether & Veil" },
   { slug: "occult-markets", name: "Occult Markets" },
-  { slug: "spirit-world", name: "Spirit World" },
+  { slug: "creature-profile", name: "Creature Profile" },
+  { slug: "ask-astra", name: "Ask Astra" },
+  { slug: "weather-and-omens", name: "Weather & Omens" },
   { slug: "opinion", name: "Opinion" },
-  { slug: "weather-omens", name: "Weather & Omens" },
+  { slug: "human-affairs", name: "Human Affairs Desk" },
+  { slug: "labor", name: "Labor Desk" },
+  { slug: "health", name: "Health Desk" },
+  { slug: "culture", name: "Cultural & Entertainment Desk" },
+  { slug: "the-crypt", name: "The Crypt Desk" },
 ] as const;
 
 type ArticleStyle = "feature" | "brief" | "breaking";

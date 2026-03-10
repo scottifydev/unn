@@ -1,14 +1,18 @@
 import Link from "next/link";
 
 const SECTIONS = [
-  { label: "Vampire Affairs", slug: "vampire-affairs" },
-  { label: "Undead Health", slug: "undead-health" },
-  { label: "Demon Politics", slug: "demon-politics" },
-  { label: "Werewolf Rights", slug: "werewolf-rights" },
+  { label: "Underworld Affairs", slug: "underworld-affairs" },
+  { label: "Ether & Veil", slug: "ether-and-veil" },
   { label: "Occult Markets", slug: "occult-markets" },
-  { label: "Spirit World", slug: "spirit-world" },
+  { label: "Creature Profile", slug: "creature-profile" },
+  { label: "Ask Astra", slug: "ask-astra" },
+  { label: "Weather & Omens", slug: "weather-and-omens" },
   { label: "Opinion", slug: "opinion" },
-  { label: "Weather & Omens", slug: "weather-omens" },
+  { label: "Human Affairs Desk", slug: "human-affairs" },
+  { label: "Labor Desk", slug: "labor" },
+  { label: "Health Desk", slug: "health" },
+  { label: "Cultural & Entertainment Desk", slug: "culture" },
+  { label: "The Crypt Desk", slug: "the-crypt" },
 ] as const;
 
 export default function Footer() {
