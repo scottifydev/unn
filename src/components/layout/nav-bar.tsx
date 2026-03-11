@@ -42,7 +42,7 @@ export default function NavBar() {
   );
 
   return (
-    <nav className="border-b border-seam bg-chamber">
+    <nav className="relative z-40 border-b border-seam bg-chamber">
       <div className="scrollbar-none mx-auto flex max-w-[1380px] items-center gap-4 overflow-x-auto px-4 py-2 sm:justify-center sm:gap-6">
         {NAV_SECTIONS.map(({ label, slug }) => {
           const href = `/section/${slug}`;
@@ -74,7 +74,7 @@ export default function NavBar() {
             More {moreOpen ? "▴" : "▾"}
           </button>
           {moreOpen && (
-            <div className="absolute left-0 top-full z-50 mt-1 min-w-[220px] rounded border border-seam bg-chamber shadow-lg">
+            <div className="absolute left-0 top-full z-[100] mt-1 min-w-[220px] rounded border border-seam bg-chamber shadow-lg">
               {MORE_SECTIONS.map(({ label, slug }) => {
                 const href = `/section/${slug}`;
                 const isActive = pathname === href || pathname.startsWith(`${href}/`);
