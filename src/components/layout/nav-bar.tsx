@@ -43,26 +43,30 @@ export default function NavBar() {
 
   return (
     <nav className="relative z-40 border-b border-seam bg-chamber">
-      <div className="scrollbar-none mx-auto flex max-w-[1380px] items-center gap-4 overflow-x-auto px-4 py-2 sm:justify-center sm:gap-6">
-        {NAV_SECTIONS.map(({ label, slug }) => {
-          const href = `/section/${slug}`;
-          const isActive = pathname === href || pathname.startsWith(`${href}/`);
-          return (
-            <Link
-              key={slug}
-              href={href}
-              className={`whitespace-nowrap font-barlow text-nav font-medium uppercase tracking-[0.14em] transition-colors ${
-                isActive
-                  ? "border-b-2 border-garnet pb-px text-paper"
-                  : "text-stone hover:text-parchment"
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
+      <div className="mx-auto flex max-w-[1380px] items-center px-4">
+        {/* Scrollable section links — overflow-x-auto scoped here only */}
+        <div className="scrollbar-none flex min-w-0 flex-1 items-center gap-4 overflow-x-auto py-2 sm:justify-center sm:gap-6">
+          {NAV_SECTIONS.map(({ label, slug }) => {
+            const href = `/section/${slug}`;
+            const isActive = pathname === href || pathname.startsWith(`${href}/`);
+            return (
+              <Link
+                key={slug}
+                href={href}
+                className={`whitespace-nowrap font-barlow text-nav font-medium uppercase tracking-[0.14em] transition-colors ${
+                  isActive
+                    ? "border-b-2 border-garnet pb-px text-paper"
+                    : "text-stone hover:text-parchment"
+                }`}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </div>
 
-        <div ref={moreRef} className="relative shrink-0">
+        {/* More dropdown — outside the overflow container so it's never clipped */}
+        <div ref={moreRef} className="relative shrink-0 py-2 pl-4">
           <button
             onClick={() => setMoreOpen((o) => !o)}
             className={`whitespace-nowrap font-barlow text-nav font-medium uppercase tracking-[0.14em] transition-colors ${
@@ -74,7 +78,7 @@ export default function NavBar() {
             More {moreOpen ? "▴" : "▾"}
           </button>
           {moreOpen && (
-            <div className="absolute left-0 top-full z-[100] mt-1 min-w-[220px] rounded border border-seam bg-chamber shadow-lg">
+            <div className="absolute right-0 top-full z-[100] mt-1 min-w-[220px] rounded border border-seam bg-chamber shadow-lg">
               {MORE_SECTIONS.map(({ label, slug }) => {
                 const href = `/section/${slug}`;
                 const isActive = pathname === href || pathname.startsWith(`${href}/`);
