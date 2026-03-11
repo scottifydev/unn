@@ -28,11 +28,12 @@ interface GeneratedArticle {
   dek: string | null;
   body_html: string | null;
   status: string;
+  featured_image_url: string | null;
 }
 
 export default function GenerateArticlePage() {
   const [sectionSlug, setSectionSlug] = useState<string>(SECTIONS[0].slug);
-  const [topicHint, setTopicHint] = useState("");
+  const [rawContent, setRawContent] = useState("");
   const [style, setStyle] = useState<ArticleStyle>("feature");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +51,7 @@ export default function GenerateArticlePage() {
         {
           body: {
             section_slug: sectionSlug,
-            topic_hint: topicHint || undefined,
+            raw_content: rawContent,
             style,
           },
         }
@@ -123,23 +124,22 @@ export default function GenerateArticlePage() {
             </select>
           </div>
 
-          {/* Topic hint */}
+          {/* Raw article content */}
           <div className="mb-6">
             <label
-              htmlFor="topic"
+              htmlFor="raw_content"
               className="mb-2 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone"
             >
-              Topic Hint{" "}
-              <span className="normal-case tracking-normal text-ash">(optional)</span>
+              Article Draft
             </label>
             <textarea
-              id="topic"
-              value={topicHint}
-              onChange={(e) => setTopicHint(e.target.value)}
+              id="raw_content"
+              value={rawContent}
+              onChange={(e) => setRawContent(e.target.value)}
               disabled={loading}
-              rows={3}
-              placeholder="e.g., New microplastic regulations affecting blood supply chain..."
-              className="w-full resize-none rounded border border-seam bg-graphite px-3 py-2.5 font-crimson text-parchment placeholder:text-ash transition-colors focus:border-parchment focus:outline-none disabled:opacity-50"
+              rows={12}
+              placeholder="Paste your draft here. Include headline, any quotes with attribution, and body copy. Gemini will polish the formatting and generate a featured image."
+              className="w-full resize-y rounded border border-seam bg-graphite px-3 py-2.5 font-crimson text-parchment placeholder:text-ash transition-colors focus:border-parchment focus:outline-none disabled:opacity-50"
             />
           </div>
 
@@ -187,7 +187,7 @@ export default function GenerateArticlePage() {
           {/* Generate button */}
           <button
             onClick={handleGenerate}
-            disabled={loading}
+            disabled={loading || !rawContent.trim()}
             className="w-full rounded bg-garnet px-6 py-3 font-barlow text-sm font-semibold uppercase tracking-wider text-paper transition-colors hover:bg-garnet-bright disabled:opacity-50 sm:w-auto"
           >
             {loading ? (
@@ -222,6 +222,15 @@ export default function GenerateArticlePage() {
                 AI Generated
               </span>
             </div>
+
+            {article.featured_image_url && (
+              <img
+                src={article.featured_image_url}
+                alt=""
+                className="mb-4 w-full rounded object-cover"
+                style={{ maxHeight: "280px" }}
+              />
+            )}
 
             <h2 className="mb-2 font-cinzel text-xl font-bold text-paper sm:text-2xl">
               {article.headline}
