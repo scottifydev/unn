@@ -10,6 +10,7 @@ interface HeroCardProps {
   date: string;
   slug: string;
   imageUrl?: string;
+  imageAlt?: string;
 }
 
 export function HeroCard({
@@ -21,6 +22,7 @@ export function HeroCard({
   date,
   slug,
   imageUrl,
+  imageAlt,
 }: HeroCardProps) {
   return (
     <Link href={`/article/${slug}`} className="group block">
@@ -28,7 +30,7 @@ export function HeroCard({
         {imageUrl ? (
           <img
             src={imageUrl}
-            alt=""
+            alt={imageAlt ?? headline}
             loading="eager"
             className="absolute inset-0 w-full h-full object-cover"
           />

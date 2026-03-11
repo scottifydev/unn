@@ -286,9 +286,11 @@ serve(async (req: Request) => {
 
     // --- Step 2: Image generation via Vertex AI Imagen 3 (non-fatal) ---
     let featuredImageUrl: string | null = null;
+    let featuredImageAlt: string | null = null;
 
     try {
       const imagePrompt = buildImagePrompt(polished.headline, section.name);
+      featuredImageAlt = imagePrompt;
 
       const imageResponse = await fetch(
         `${vertexBase}/imagen-3.0-generate-001:predict`,
@@ -379,6 +381,7 @@ serve(async (req: Request) => {
         article_type: "ai",
         status: "pending",
         featured_image_url: featuredImageUrl,
+        featured_image_alt: featuredImageUrl ? featuredImageAlt : null,
       })
       .select()
       .single();

@@ -34,6 +34,7 @@ export const createArticleSchema = z.object({
   body_html: z.string().optional(),
   section_id: z.string().uuid(),
   featured_image_url: z.string().url().optional(),
+  featured_image_alt: z.string().max(500).optional(),
 });
 
 export const updateArticleSchema = z.object({
@@ -42,7 +43,8 @@ export const updateArticleSchema = z.object({
   body_json: z.unknown().optional(),
   body_html: z.string().optional(),
   section_id: z.string().uuid().optional(),
-  featured_image_url: z.string().url().optional(),
+  featured_image_url: z.string().url().nullable().optional(),
+  featured_image_alt: z.string().max(500).nullable().optional(),
   status: z
     .enum(["draft", "pending", "published", "archived"] as const)
     .optional(),

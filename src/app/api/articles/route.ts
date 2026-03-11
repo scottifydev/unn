@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { headline, dek, body_json, body_html, section_id, featured_image_url } =
+  const { headline, dek, body_json, body_html, section_id, featured_image_url, featured_image_alt } =
     result.data;
 
   const slug = slugify(headline) + "-" + Date.now().toString(36);
@@ -104,6 +104,7 @@ export async function POST(request: NextRequest) {
     section_id,
     author_id: user.id,
     featured_image_url: featured_image_url ?? null,
+    featured_image_alt: featured_image_alt ?? null,
     status: "draft",
     article_type: "user",
   };

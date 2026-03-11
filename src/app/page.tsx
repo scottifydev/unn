@@ -102,6 +102,7 @@ function mapArticle(article: ArticleWithSectionAndAuthor) {
     date: formatDate(article.published_at),
     slug: article.slug,
     imageUrl: article.featured_image_url ?? undefined,
+    imageAlt: article.featured_image_alt ?? undefined,
   };
 }
 

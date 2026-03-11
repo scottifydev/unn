@@ -147,7 +147,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   }
   if (updates.section_id !== undefined) updateData.section_id = updates.section_id;
   if (updates.featured_image_url !== undefined) {
-    updateData.featured_image_url = updates.featured_image_url;
+    updateData.featured_image_url = updates.featured_image_url ?? null;
+  }
+  if (updates.featured_image_alt !== undefined) {
+    updateData.featured_image_alt = updates.featured_image_alt ?? null;
   }
   if (updates.status !== undefined) {
     updateData.status = updates.status;

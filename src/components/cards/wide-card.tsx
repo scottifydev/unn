@@ -10,6 +10,7 @@ interface WideCardProps {
   date: string;
   slug: string;
   imageUrl?: string;
+  imageAlt?: string;
 }
 
 export function WideCard({
@@ -21,6 +22,7 @@ export function WideCard({
   date,
   slug,
   imageUrl,
+  imageAlt,
 }: WideCardProps) {
   return (
     <Link href={`/article/${slug}`} className="group block">
@@ -29,7 +31,7 @@ export function WideCard({
           {imageUrl ? (
             <img
               src={imageUrl}
-              alt=""
+              alt={imageAlt ?? headline}
               loading="lazy"
               className="absolute inset-0 w-full h-full object-cover"
             />

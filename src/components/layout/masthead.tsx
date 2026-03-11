@@ -109,6 +109,13 @@ function UserMenu() {
           {isEditor && (
             <>
               <Link
+                href="/editor/articles"
+                onClick={() => setOpen(false)}
+                className="block px-4 py-2 font-barlow text-[11px] font-medium uppercase tracking-[0.1em] text-parchment transition-colors hover:bg-slate hover:text-paper"
+              >
+                Manage Articles
+              </Link>
+              <Link
                 href="/editor/queue"
                 onClick={() => setOpen(false)}
                 className="block px-4 py-2 font-barlow text-[11px] font-medium uppercase tracking-[0.1em] text-parchment transition-colors hover:bg-slate hover:text-paper"

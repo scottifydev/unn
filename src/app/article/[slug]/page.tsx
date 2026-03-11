@@ -183,6 +183,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               <div className="mt-4 border-b border-seam" />
             </header>
 
+            {/* Featured Image */}
+            {article.featured_image_url && (
+              <div className="mb-8 overflow-hidden rounded border border-seam">
+                <img
+                  src={article.featured_image_url}
+                  alt={article.featured_image_alt ?? article.headline}
+                  className="w-full object-cover"
+                  style={{ maxHeight: "480px" }}
+                />
+              </div>
+            )}
+
             {/* Body */}
             {article.body_html ? (
               <ArticleBody dropCap>

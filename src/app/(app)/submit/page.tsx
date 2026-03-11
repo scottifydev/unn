@@ -14,6 +14,7 @@ export default function SubmitArticlePage() {
   const [sectionId, setSectionId] = useState("");
   const [body, setBody] = useState("");
   const [featuredImageUrl, setFeaturedImageUrl] = useState<string | null>(null);
+  const [featuredImageAlt, setFeaturedImageAlt] = useState<string | null>(null);
   const [imagePrompt, setImagePrompt] = useState("");
   const [generatingImage, setGeneratingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
@@ -64,6 +65,7 @@ export default function SubmitArticlePage() {
       }
       if (data?.image_url) {
         setFeaturedImageUrl(data.image_url);
+        setFeaturedImageAlt(data.brief ?? null);
       }
     } catch (err) {
       setImageError(err instanceof Error ? err.message : "Unknown error");
@@ -86,6 +88,7 @@ export default function SubmitArticlePage() {
         section_id: sectionId,
         body_html: body || undefined,
         featured_image_url: featuredImageUrl || undefined,
+        featured_image_alt: featuredImageAlt || undefined,
       }),
     });
 
@@ -216,7 +219,7 @@ export default function SubmitArticlePage() {
                 <div className="relative overflow-hidden rounded border border-seam">
                   <Image
                     src={featuredImageUrl}
-                    alt="Generated featured image"
+                    alt={featuredImageAlt ?? "Generated featured image"}
                     width={800}
                     height={600}
                     className="w-full object-cover"
@@ -225,7 +228,7 @@ export default function SubmitArticlePage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setFeaturedImageUrl(null)}
+                    onClick={() => { setFeaturedImageUrl(null); setFeaturedImageAlt(null); }}
                     className="absolute right-2 top-2 rounded bg-void/80 px-2 py-1 font-barlow text-[10px] font-medium uppercase tracking-wider text-stone hover:text-parchment"
                   >
                     Remove

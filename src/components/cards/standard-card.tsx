@@ -10,6 +10,7 @@ interface StandardCardProps {
   date: string;
   slug: string;
   imageUrl?: string;
+  imageAlt?: string;
 }
 
 export function StandardCard({
@@ -21,6 +22,7 @@ export function StandardCard({
   date,
   slug,
   imageUrl,
+  imageAlt,
 }: StandardCardProps) {
   return (
     <Link href={`/article/${slug}`} className="group block">
@@ -29,7 +31,7 @@ export function StandardCard({
           {imageUrl ? (
             <img
               src={imageUrl}
-              alt=""
+              alt={imageAlt ?? headline}
               loading="lazy"
               className="absolute inset-0 w-full h-full object-cover"
             />

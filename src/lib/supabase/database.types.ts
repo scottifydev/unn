@@ -87,6 +87,7 @@ export interface Database {
           article_type: ArticleType;
           status: ArticleStatus;
           featured: boolean;
+          featured_image_alt: string | null;
           featured_image_url: string | null;
           published_at: string | null;
           created_at: string;
@@ -104,6 +105,7 @@ export interface Database {
           article_type?: ArticleType;
           status?: ArticleStatus;
           featured?: boolean;
+          featured_image_alt?: string | null;
           featured_image_url?: string | null;
           published_at?: string | null;
           created_at?: string;
@@ -121,6 +123,7 @@ export interface Database {
           article_type?: ArticleType;
           status?: ArticleStatus;
           featured?: boolean;
+          featured_image_alt?: string | null;
           featured_image_url?: string | null;
           published_at?: string | null;
           created_at?: string;
