@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { importPKCS8, SignJWT } from "https://esm.sh/jose@5.2.0";
 
 const SECTION_SLUGS = [
   "underworld-affairs",
@@ -32,6 +33,12 @@ interface PolishedArticle {
   section_slug: string;
 }
 
+interface ServiceAccount {
+  client_email: string;
+  private_key: string;
+  project_id: string;
+}
+
 const UNN_STYLE_RULES = `
 UNN AP/Reuters wire-service style rules:
 - Deadpan institutional register. The supernatural world is real. Never wink at the reader.
@@ -44,6 +51,35 @@ UNN AP/Reuters wire-service style rules:
 - Names: full name on first reference, last name only after.
 - No editorializing. No adjectives expressing judgment.
 `.trim();
+
+async function getAccessToken(sa: ServiceAccount): Promise<string> {
+  const privateKey = await importPKCS8(sa.private_key, "RS256");
+  const now = Math.floor(Date.now() / 1000);
+
+  const jwt = await new SignJWT({
+    scope: "https://www.googleapis.com/auth/cloud-platform",
+  })
+    .setProtectedHeader({ alg: "RS256", typ: "JWT" })
+    .setIssuedAt(now)
+    .setIssuer(sa.client_email)
+    .setAudience("https://oauth2.googleapis.com/token")
+    .setExpirationTime(now + 3600)
+    .sign(privateKey);
+
+  const resp = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+  });
+
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error(`Failed to get access token: ${err}`);
+  }
+
+  const { access_token } = await resp.json();
+  return access_token as string;
+}
 
 function buildPolishPrompt(
   sectionSlug: string,
@@ -81,18 +117,12 @@ Return ONLY valid JSON with exactly these fields:
 }
 
 function buildImagePrompt(headline: string, sectionName: string): string {
-  return `Generate an editorial photograph for the Underworld News Network (UNN), a serious institutional newspaper.
+  return `Editorial photograph for the Underworld News Network (UNN), a serious institutional broadsheet newspaper covering supernatural affairs.
 
 Article headline: ${headline}
 Section: ${sectionName}
 
-Visual requirements:
-- Cold, desaturated editorial photograph. Near-monochrome, grain-processed, underexposed.
-- No warm tones. No color saturation.
-- Visual register: Financial Times or Reuters wire photography applied to supernatural subject matter.
-- Institutional, serious, documentary. Think: press conference, council chamber, official proceedings — but supernatural subjects.
-- NO Halloween imagery. NO skulls. NO fire. NO neon. NO horror aesthetics. NO dramatic horror lighting.
-- The image should look like it belongs in a broadsheet newspaper, not a horror film poster.`;
+Visual style: Cold, desaturated documentary photography. Near-monochrome, film grain, slightly underexposed. Financial Times or Reuters wire photography aesthetic applied to supernatural subject matter. Institutional, serious, press-conference or official-proceedings register. The subjects may be supernatural entities — vampires in suits, spectral figures at podiums, creatures in bureaucratic settings — but the photographic treatment must be strictly documentary and journalistic. NO Halloween imagery. NO skulls as decoration. NO fire or dramatic horror lighting. NO neon. NO horror-film aesthetics. This image must look at home in a broadsheet newspaper front page.`;
 }
 
 function slugify(text: string): string {
@@ -152,15 +182,26 @@ serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+    const serviceAccountJson = Deno.env.get("GOOGLE_SERVICE_ACCOUNT_JSON");
 
-    if (!geminiApiKey) {
+    if (!serviceAccountJson) {
       return new Response(
-        JSON.stringify({ error: "GEMINI_API_KEY not configured" }),
+        JSON.stringify({ error: "GOOGLE_SERVICE_ACCOUNT_JSON not configured" }),
         { status: 500, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
       );
     }
 
+    let sa: ServiceAccount;
+    try {
+      sa = JSON.parse(serviceAccountJson);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid GOOGLE_SERVICE_ACCOUNT_JSON" }),
+        { status: 500, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
+      );
+    }
+
+    const projectId = sa.project_id;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: section, error: sectionError } = await supabase
@@ -176,17 +217,33 @@ serve(async (req: Request) => {
       );
     }
 
-    // --- Step 1: Text polish via Gemini ---
+    // --- Get Vertex AI access token ---
+    let accessToken: string;
+    try {
+      accessToken = await getAccessToken(sa);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      return new Response(
+        JSON.stringify({ error: "Failed to authenticate with Google", details: msg }),
+        { status: 502, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
+      );
+    }
+
+    const vertexBase = `https://us-central1-aiplatform.googleapis.com/v1/projects/${projectId}/locations/us-central1/publishers/google/models`;
+
+    // --- Step 1: Text polish via Vertex AI Gemini 2.0 Flash ---
     const polishPrompt = buildPolishPrompt(section_slug, section.name, style, raw_content);
 
     const textResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`,
+      `${vertexBase}/gemini-2.0-flash-001:generateContent`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: polishPrompt }] }],
-          generationConfig: { responseMimeType: "application/json" },
+          contents: [{ role: "user", parts: [{ text: polishPrompt }] }],
         }),
       }
     );
@@ -194,7 +251,7 @@ serve(async (req: Request) => {
     if (!textResponse.ok) {
       const errBody = await textResponse.text();
       return new Response(
-        JSON.stringify({ error: "Gemini text API error", details: errBody }),
+        JSON.stringify({ error: "Vertex AI text API error", details: errBody }),
         { status: 502, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
       );
     }
@@ -204,58 +261,61 @@ serve(async (req: Request) => {
 
     if (!rawText) {
       return new Response(
-        JSON.stringify({ error: "Empty response from Gemini text API" }),
+        JSON.stringify({ error: "Empty response from Vertex AI text API" }),
         { status: 502, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
       );
     }
 
     let polished: PolishedArticle;
     try {
-      polished = JSON.parse(rawText);
+      const cleaned = rawText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+      polished = JSON.parse(cleaned);
     } catch {
       return new Response(
-        JSON.stringify({ error: "Failed to parse Gemini text response as JSON", raw: rawText.slice(0, 500) }),
+        JSON.stringify({ error: "Failed to parse text response as JSON", raw: rawText.slice(0, 500) }),
         { status: 502, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
       );
     }
 
     if (!polished.headline || !polished.body_html) {
       return new Response(
-        JSON.stringify({ error: "Gemini response missing required fields (headline, body_html)" }),
+        JSON.stringify({ error: "Response missing required fields (headline, body_html)" }),
         { status: 502, headers: { ...corsHeaders(), "Content-Type": "application/json" } }
       );
     }
 
-    // --- Step 2: Image generation via Gemini (non-fatal) ---
+    // --- Step 2: Image generation via Vertex AI Imagen 3 (non-fatal) ---
     let featuredImageUrl: string | null = null;
 
     try {
       const imagePrompt = buildImagePrompt(polished.headline, section.name);
 
       const imageResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${geminiApiKey}`,
+        `${vertexBase}/imagen-3.0-generate-001:predict`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: imagePrompt }] }],
-            generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+            instances: [{ prompt: imagePrompt }],
+            parameters: {
+              sampleCount: 1,
+              aspectRatio: "4:3",
+            },
           }),
         }
       );
 
       if (imageResponse.ok) {
         const imageData = await imageResponse.json();
-        const parts = imageData?.candidates?.[0]?.content?.parts ?? [];
-        const imagePart = parts.find(
-          (p: { inlineData?: { mimeType: string; data: string } }) =>
-            p.inlineData?.mimeType?.startsWith("image/")
-        );
+        const prediction = imageData?.predictions?.[0];
 
-        if (imagePart?.inlineData?.data) {
-          const base64Data: string = imagePart.inlineData.data;
-          const mimeType: string = imagePart.inlineData.mimeType;
-          const ext = mimeType.includes("png") ? "png" : "jpg";
+        if (prediction?.bytesBase64Encoded) {
+          const base64Data: string = prediction.bytesBase64Encoded;
+          const mimeType: string = prediction.mimeType ?? "image/png";
+          const ext = mimeType.includes("jpeg") || mimeType.includes("jpg") ? "jpg" : "png";
           const imageBytes = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
           const imagePath = `${Date.now()}-${slugify(polished.headline)}.${ext}`;
 
@@ -317,7 +377,7 @@ serve(async (req: Request) => {
         section_id: section.id,
         author_id: authorId,
         article_type: "ai",
-        status: "draft",
+        status: "pending",
         featured_image_url: featuredImageUrl,
       })
       .select()
