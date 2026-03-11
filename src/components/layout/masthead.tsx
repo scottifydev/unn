@@ -196,7 +196,7 @@ export default function Masthead() {
         </div>
 
         <Link href="/" className="flex flex-col items-center justify-center text-center max-lg:flex-1">
-          <span className="font-cinzel text-[32px] font-black uppercase leading-none tracking-[0.08em] text-paper sm:text-[48px] lg:text-[72px]">
+          <span className="font-cinzel text-[26px] font-black uppercase leading-none tracking-[0.08em] text-paper sm:text-[32px] lg:text-[40px]">
             UNN
           </span>
           <span className="hidden font-barlow text-[9px] font-light uppercase tracking-[0.2em] text-ash sm:block">
