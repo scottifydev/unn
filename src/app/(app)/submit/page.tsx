@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Section } from "@/lib/types";
+import Image from "next/image";
 
 export default function SubmitArticlePage() {
   const router = useRouter();
@@ -12,6 +13,10 @@ export default function SubmitArticlePage() {
   const [dek, setDek] = useState("");
   const [sectionId, setSectionId] = useState("");
   const [body, setBody] = useState("");
+  const [featuredImageUrl, setFeaturedImageUrl] = useState<string | null>(null);
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -32,6 +37,41 @@ export default function SubmitArticlePage() {
     loadSections();
   }, []);
 
+  const selectedSection = sections.find((s) => s.id === sectionId);
+
+  async function handleGenerateImage() {
+    if (!headline.trim() || !selectedSection) return;
+    setGeneratingImage(true);
+    setImageError(null);
+
+    try {
+      const supabase = createClient();
+      const { data, error: fnError } = await supabase.functions.invoke("generate-image", {
+        body: {
+          headline: headline.trim(),
+          section_name: selectedSection.name,
+          custom_prompt: imagePrompt.trim() || undefined,
+        },
+      });
+
+      if (fnError) {
+        setImageError(fnError.message || "Image generation failed");
+        return;
+      }
+      if (data?.error) {
+        setImageError(data.error);
+        return;
+      }
+      if (data?.image_url) {
+        setFeaturedImageUrl(data.image_url);
+      }
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setGeneratingImage(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -45,6 +85,7 @@ export default function SubmitArticlePage() {
         dek: dek || undefined,
         section_id: sectionId,
         body_html: body || undefined,
+        featured_image_url: featuredImageUrl || undefined,
       }),
     });
 
@@ -132,6 +173,73 @@ export default function SubmitArticlePage() {
                   </option>
                 ))}
               </select>
+            </div>
+
+            {/* Featured Image */}
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
+                  Featured Image
+                </label>
+                <button
+                  type="button"
+                  onClick={handleGenerateImage}
+                  disabled={generatingImage || headline.trim().length < 5 || !selectedSection}
+                  className="flex items-center gap-1.5 rounded border border-seam px-3 py-1 font-barlow text-[11px] font-medium uppercase tracking-wider text-stone transition-colors hover:border-parchment hover:text-parchment disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {generatingImage ? (
+                    <>
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border border-stone/30 border-t-stone" />
+                      Generating...
+                    </>
+                  ) : featuredImageUrl ? (
+                    "Regenerate"
+                  ) : (
+                    "Generate Image"
+                  )}
+                </button>
+              </div>
+
+              <textarea
+                value={imagePrompt}
+                onChange={(e) => setImagePrompt(e.target.value)}
+                rows={2}
+                placeholder="Optional: describe the image you want (e.g. 'a vampire in a pinstripe suit reviewing tax documents in a grey office')"
+                className="mb-2 w-full resize-none rounded border border-seam bg-graphite px-3 py-2 font-crimson text-sm text-parchment placeholder:text-ash outline-none focus:border-garnet"
+              />
+
+              {imageError && (
+                <p className="mb-2 font-crimson text-sm text-garnet-bright">{imageError}</p>
+              )}
+
+              {featuredImageUrl ? (
+                <div className="relative overflow-hidden rounded border border-seam">
+                  <Image
+                    src={featuredImageUrl}
+                    alt="Generated featured image"
+                    width={800}
+                    height={600}
+                    className="w-full object-cover"
+                    style={{ maxHeight: "260px" }}
+                    unoptimized
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setFeaturedImageUrl(null)}
+                    className="absolute right-2 top-2 rounded bg-void/80 px-2 py-1 font-barlow text-[10px] font-medium uppercase tracking-wider text-stone hover:text-parchment"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="flex h-24 items-center justify-center rounded border border-dashed border-seam bg-graphite">
+                  <p className="font-barlow text-[11px] uppercase tracking-wider text-ash">
+                    {headline.trim().length < 5
+                      ? "Enter a headline to generate an image"
+                      : "No image — click Generate Image above"}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div>
