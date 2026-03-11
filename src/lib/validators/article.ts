@@ -45,6 +45,7 @@ export const updateArticleSchema = z.object({
   section_id: z.string().uuid().optional(),
   featured_image_url: z.string().url().nullable().optional(),
   featured_image_alt: z.string().max(500).nullable().optional(),
+  featured: z.boolean().optional(),
   status: z
     .enum(["draft", "pending", "published", "archived"] as const)
     .optional(),

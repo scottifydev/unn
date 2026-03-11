@@ -137,6 +137,7 @@ export default async function ManageArticlesPage() {
                             section_id: article.section_id,
                             section_name: article.sections?.name ?? "",
                             status: article.status,
+                            featured: article.featured,
                             featured_image_url: article.featured_image_url,
                             featured_image_alt: article.featured_image_alt,
                           }}
@@ -181,6 +182,7 @@ export default async function ManageArticlesPage() {
                       section_id: article.section_id,
                       section_name: article.sections?.name ?? "",
                       status: article.status,
+                      featured: article.featured,
                       featured_image_url: article.featured_image_url,
                       featured_image_alt: article.featured_image_alt,
                     }}

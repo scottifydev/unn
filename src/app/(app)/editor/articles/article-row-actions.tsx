@@ -13,6 +13,7 @@ interface ArticleData {
   section_id: string;
   section_name: string;
   status: string;
+  featured: boolean;
   featured_image_url: string | null;
   featured_image_alt: string | null;
 }
@@ -29,6 +30,7 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
   const [modal, setModal] = useState<Modal>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [featured, setFeatured] = useState(article.featured);
 
   // Edit state
   const [headline, setHeadline] = useState(article.headline);
@@ -140,11 +142,34 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
     if (res.ok) { setImagePreview(null); setImageAlt(null); close(); router.refresh(); }
   }
 
+  async function handleToggleFeatured() {
+    const next = !featured;
+    setFeatured(next);
+    const res = await fetch(`/api/articles/${article.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ featured: next }),
+    });
+    if (!res.ok) {
+      setFeatured(!next);
+    } else {
+      router.refresh();
+    }
+  }
+
   const btnBase = "font-barlow text-[10px] font-medium uppercase tracking-wider transition-colors";
 
   return (
     <>
       <div className="flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={handleToggleFeatured}
+          title={featured ? "Unfeature" : "Set as featured"}
+          className={`text-lg leading-none transition-colors ${featured ? "text-garnet-bright hover:text-stone" : "text-seam hover:text-garnet-bright"}`}
+        >
+          ★
+        </button>
         <button
           type="button"
           onClick={() => setModal("image")}

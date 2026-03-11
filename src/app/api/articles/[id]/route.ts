@@ -146,6 +146,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     updateData.body_html = sanitizeHtml(updates.body_html);
   }
   if (updates.section_id !== undefined) updateData.section_id = updates.section_id;
+  if (updates.featured !== undefined) {
+    updateData.featured = updates.featured;
+  }
   if (updates.featured_image_url !== undefined) {
     updateData.featured_image_url = updates.featured_image_url ?? null;
   }
