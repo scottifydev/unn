@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { ImageSearch } from "@/components/editor/image-search";
+import { RichTextEditor } from "@/components/editor/rich-text-editor";
 
 interface ArticleData {
   id: string;
@@ -15,6 +17,7 @@ interface ArticleData {
   section_name: string;
   status: string;
   featured: boolean;
+  sort_order: number | null;
   featured_image_url: string | null;
   featured_image_alt: string | null;
 }
@@ -38,6 +41,7 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
   const [dek, setDek] = useState(article.dek ?? "");
   const [bodyHtml, setBodyHtml] = useState(article.body_html ?? "");
   const [status, setStatus] = useState(article.status);
+  const [sortOrder, setSortOrder] = useState(article.sort_order?.toString() ?? "");
 
   // Image regen state
   const [imageTab, setImageTab] = useState<"ai" | "stock">("ai");
@@ -64,6 +68,7 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
         dek: dek.trim() || undefined,
         body_html: bodyHtml.trim() || undefined,
         status,
+        sort_order: sortOrder.trim() ? parseInt(sortOrder, 10) : null,
       }),
     });
     const json = await res.json();
@@ -172,6 +177,13 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
         >
           ★
         </button>
+        <Link
+          href={`/editor/preview/${article.id}`}
+          target="_blank"
+          className={`${btnBase} text-stone hover:text-parchment`}
+        >
+          Preview
+        </Link>
         <button
           type="button"
           onClick={() => setModal("image")}
@@ -207,7 +219,7 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
 
       {/* Edit Modal */}
       {modal === "edit" && (
-        <div className="fixed left-1/2 top-1/2 z-[201] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded border border-seam bg-chamber p-6 shadow-xl">
+        <div className="fixed left-1/2 top-1/2 z-[201] w-full max-w-3xl -translate-x-1/2 -translate-y-1/2 max-h-[90vh] overflow-y-auto rounded border border-seam bg-chamber p-6 shadow-xl">
           <h2 className="mb-4 font-cinzel text-lg font-bold text-paper">Edit Article</h2>
           <div className="space-y-4">
             <div>
@@ -229,13 +241,8 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
               />
             </div>
             <div>
-              <label className="mb-1 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">Body HTML</label>
-              <textarea
-                value={bodyHtml}
-                onChange={(e) => setBodyHtml(e.target.value)}
-                rows={10}
-                className="w-full resize-y rounded border border-seam bg-graphite px-3 py-2 font-crimson text-sm text-parchment leading-relaxed outline-none focus:border-garnet"
-              />
+              <label className="mb-1 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">Body</label>
+              <RichTextEditor value={bodyHtml} onChange={setBodyHtml} placeholder="Write article body..." />
             </div>
             <div>
               <label className="mb-1 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">Status</label>
@@ -249,6 +256,20 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
                 <option value="published">Published</option>
                 <option value="archived">Archived</option>
               </select>
+            </div>
+            <div>
+              <label className="mb-1 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
+                Sort Order <span className="font-normal normal-case tracking-normal text-ash">(blank = unpinned)</span>
+              </label>
+              <input
+                type="number"
+                min={0}
+                max={9999}
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                placeholder="e.g. 10"
+                className="w-full rounded border border-seam bg-graphite px-3 py-2 font-crimson text-parchment placeholder:text-ash outline-none focus:border-garnet"
+              />
             </div>
             {error && <p className="font-crimson text-sm text-garnet-bright">{error}</p>}
             <div className="flex justify-end gap-3 pt-2">
