@@ -38,6 +38,7 @@ async function getPublishedArticlesWithAuthor(limit = 12): Promise<ArticleWithSe
     .from("articles")
     .select("*, sections(*), profiles(*)")
     .eq("status", "published")
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("published_at", { ascending: false })
     .limit(limit);
   if (error) throw error;

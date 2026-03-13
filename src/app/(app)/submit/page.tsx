@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { Section } from "@/lib/types";
 import Image from "next/image";
 import { ImageSearch } from "@/components/editor/image-search";
+import { RichTextEditor } from "@/components/editor/rich-text-editor";
 
 export default function SubmitArticlePage() {
   const router = useRouter();
@@ -266,13 +267,7 @@ export default function SubmitArticlePage() {
               <label className="mb-1 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
                 Body
               </label>
-              <textarea
-                value={body}
-                onChange={(e) => setBody(e.target.value)}
-                rows={12}
-                placeholder="Write your article here..."
-                className="w-full resize-y rounded border border-seam bg-graphite px-3 py-2 font-crimson text-parchment leading-relaxed placeholder:text-ash outline-none focus:border-garnet"
-              />
+              <RichTextEditor value={body} onChange={setBody} placeholder="Write your article here..." minHeight="320px" />
             </div>
 
             {error && (

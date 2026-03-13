@@ -149,6 +149,9 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   if (updates.featured !== undefined) {
     updateData.featured = updates.featured;
   }
+  if (updates.sort_order !== undefined) {
+    updateData.sort_order = updates.sort_order ?? null;
+  }
   if (updates.featured_image_url !== undefined) {
     updateData.featured_image_url = updates.featured_image_url ?? null;
   }
