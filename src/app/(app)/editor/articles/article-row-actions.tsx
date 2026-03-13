@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ImageSearch } from "@/components/editor/image-search";
 
 interface ArticleData {
   id: string;
@@ -39,6 +40,7 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
   const [status, setStatus] = useState(article.status);
 
   // Image regen state
+  const [imageTab, setImageTab] = useState<"ai" | "stock">("ai");
   const [imagePrompt, setImagePrompt] = useState("");
   const [generatingImage, setGeneratingImage] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(article.featured_image_url);
@@ -292,24 +294,35 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
               </div>
             )}
 
-            {/* Custom prompt */}
-            <div>
-              <label className="mb-1 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
-                Custom Prompt <span className="normal-case tracking-normal text-ash">(optional — leave blank to auto-generate)</span>
-              </label>
-              <textarea
-                value={imagePrompt}
-                onChange={(e) => setImagePrompt(e.target.value)}
-                rows={3}
-                placeholder={`e.g. "a vampire in a grey suit reviewing quarterly reports at a mahogany desk"`}
-                className="w-full resize-none rounded border border-seam bg-graphite px-3 py-2 font-crimson text-sm text-parchment placeholder:text-ash outline-none focus:border-garnet"
-              />
+            {/* Tabs */}
+            <div className="flex gap-0 overflow-hidden rounded border border-seam">
+              {(["ai", "stock"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setImageTab(tab)}
+                  className={`flex-1 py-1.5 font-barlow text-[10px] font-medium uppercase tracking-wider transition-colors ${
+                    imageTab === tab ? "bg-graphite text-parchment" : "bg-chamber text-ash hover:text-stone"
+                  }`}
+                >
+                  {tab === "ai" ? "AI Generate" : "Search Stock"}
+                </button>
+              ))}
             </div>
 
-            {imageError && <p className="font-crimson text-sm text-garnet-bright">{imageError}</p>}
-
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
-              <div className="flex gap-2">
+            {imageTab === "ai" ? (
+              <div className="space-y-2">
+                <label className="block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
+                  Custom Prompt <span className="normal-case tracking-normal text-ash">(optional)</span>
+                </label>
+                <textarea
+                  value={imagePrompt}
+                  onChange={(e) => setImagePrompt(e.target.value)}
+                  rows={2}
+                  placeholder={`e.g. "a vampire in a grey suit reviewing quarterly reports at a mahogany desk"`}
+                  className="w-full resize-none rounded border border-seam bg-graphite px-3 py-2 font-crimson text-sm text-parchment placeholder:text-ash outline-none focus:border-garnet"
+                />
+                {imageError && <p className="font-crimson text-sm text-garnet-bright">{imageError}</p>}
                 <button
                   type="button"
                   onClick={handleGenerateImage}
@@ -323,6 +336,15 @@ export function ArticleRowActions({ article, isAdmin }: Props) {
                     </>
                   ) : imagePreview ? "Regenerate" : "Generate"}
                 </button>
+              </div>
+            ) : (
+              <ImageSearch
+                onSelect={(url, alt) => { setImagePreview(url); setImageAlt(alt); setImageTab("ai"); }}
+              />
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-seam pt-3">
+              <div className="flex gap-2">
                 {article.featured_image_url && (
                   <button
                     type="button"

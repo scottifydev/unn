@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Section } from "@/lib/types";
 import Image from "next/image";
+import { ImageSearch } from "@/components/editor/image-search";
 
 export default function SubmitArticlePage() {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function SubmitArticlePage() {
   const [body, setBody] = useState("");
   const [featuredImageUrl, setFeaturedImageUrl] = useState<string | null>(null);
   const [featuredImageAlt, setFeaturedImageAlt] = useState<string | null>(null);
+  const [imageTab, setImageTab] = useState<"ai" | "stock">("ai");
   const [imagePrompt, setImagePrompt] = useState("");
   const [generatingImage, setGeneratingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
@@ -180,50 +182,20 @@ export default function SubmitArticlePage() {
 
             {/* Featured Image */}
             <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
-                  Featured Image
-                </label>
-                <button
-                  type="button"
-                  onClick={handleGenerateImage}
-                  disabled={generatingImage || headline.trim().length < 5 || !selectedSection}
-                  className="flex items-center gap-1.5 rounded border border-seam px-3 py-1 font-barlow text-[11px] font-medium uppercase tracking-wider text-stone transition-colors hover:border-parchment hover:text-parchment disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {generatingImage ? (
-                    <>
-                      <span className="inline-block h-3 w-3 animate-spin rounded-full border border-stone/30 border-t-stone" />
-                      Generating...
-                    </>
-                  ) : featuredImageUrl ? (
-                    "Regenerate"
-                  ) : (
-                    "Generate Image"
-                  )}
-                </button>
-              </div>
+              <label className="mb-2 block font-barlow text-[11px] font-medium uppercase tracking-[0.14em] text-stone">
+                Featured Image
+              </label>
 
-              <textarea
-                value={imagePrompt}
-                onChange={(e) => setImagePrompt(e.target.value)}
-                rows={2}
-                placeholder="Optional: describe the image you want (e.g. 'a vampire in a pinstripe suit reviewing tax documents in a grey office')"
-                className="mb-2 w-full resize-none rounded border border-seam bg-graphite px-3 py-2 font-crimson text-sm text-parchment placeholder:text-ash outline-none focus:border-garnet"
-              />
-
-              {imageError && (
-                <p className="mb-2 font-crimson text-sm text-garnet-bright">{imageError}</p>
-              )}
-
+              {/* Image preview / placeholder */}
               {featuredImageUrl ? (
-                <div className="relative overflow-hidden rounded border border-seam">
+                <div className="relative mb-3 overflow-hidden rounded border border-seam">
                   <Image
                     src={featuredImageUrl}
-                    alt={featuredImageAlt ?? "Generated featured image"}
+                    alt={featuredImageAlt ?? "Featured image"}
                     width={800}
                     height={600}
                     className="w-full object-cover"
-                    style={{ maxHeight: "260px" }}
+                    style={{ maxHeight: "240px" }}
                     unoptimized
                   />
                   <button
@@ -234,14 +206,59 @@ export default function SubmitArticlePage() {
                     Remove
                   </button>
                 </div>
-              ) : (
-                <div className="flex h-24 items-center justify-center rounded border border-dashed border-seam bg-graphite">
-                  <p className="font-barlow text-[11px] uppercase tracking-wider text-ash">
-                    {headline.trim().length < 5
-                      ? "Enter a headline to generate an image"
-                      : "No image — click Generate Image above"}
-                  </p>
+              ) : null}
+
+              {/* Tabs */}
+              <div className="mb-3 flex gap-0 rounded border border-seam overflow-hidden">
+                {(["ai", "stock"] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setImageTab(tab)}
+                    className={`flex-1 py-1.5 font-barlow text-[10px] font-medium uppercase tracking-wider transition-colors ${
+                      imageTab === tab
+                        ? "bg-graphite text-parchment"
+                        : "bg-chamber text-ash hover:text-stone"
+                    }`}
+                  >
+                    {tab === "ai" ? "AI Generate" : "Search Stock"}
+                  </button>
+                ))}
+              </div>
+
+              {imageTab === "ai" ? (
+                <div className="space-y-2">
+                  <textarea
+                    value={imagePrompt}
+                    onChange={(e) => setImagePrompt(e.target.value)}
+                    rows={2}
+                    placeholder="Optional: describe the image you want (e.g. 'a vampire in a pinstripe suit reviewing tax documents in a grey office')"
+                    className="w-full resize-none rounded border border-seam bg-graphite px-3 py-2 font-crimson text-sm text-parchment placeholder:text-ash outline-none focus:border-garnet"
+                  />
+                  {imageError && (
+                    <p className="font-crimson text-sm text-garnet-bright">{imageError}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleGenerateImage}
+                    disabled={generatingImage || headline.trim().length < 5 || !selectedSection}
+                    className="flex items-center gap-1.5 rounded border border-seam px-3 py-1.5 font-barlow text-[11px] font-medium uppercase tracking-wider text-stone transition-colors hover:border-parchment hover:text-parchment disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {generatingImage ? (
+                      <>
+                        <span className="inline-block h-3 w-3 animate-spin rounded-full border border-stone/30 border-t-stone" />
+                        Generating...
+                      </>
+                    ) : featuredImageUrl ? "Regenerate" : "Generate Image"}
+                  </button>
                 </div>
+              ) : (
+                <ImageSearch
+                  onSelect={(url, alt) => {
+                    setFeaturedImageUrl(url);
+                    setFeaturedImageAlt(alt);
+                  }}
+                />
               )}
             </div>
 
