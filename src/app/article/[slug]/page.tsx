@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ArticleBody } from "@/components/article/article-body";
+import { TTSPlayer } from "@/components/article/tts-player";
 import { ArticleJsonLd } from "@/components/seo/json-ld";
 import { CouncilAdvisory } from "@/components/sidebar/council-advisory";
 import { Trending } from "@/components/sidebar/trending";
@@ -180,6 +181,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                   <time>{formatDate(article.published_at)}</time>
                 )}
               </div>
+              <TTSPlayer headline={article.headline} dek={article.dek} bodyHtml={article.body_html} />
               <div className="mt-4 border-b border-seam" />
             </header>
 

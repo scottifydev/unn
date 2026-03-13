@@ -38,6 +38,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         style: `min-height: ${minHeight}`,
+        dir: "ltr",
       },
     },
   });
