@@ -95,6 +95,8 @@ export function TTSPlayer({ headline, dek, bodyHtml }: TTSPlayerProps) {
     const activePreset = PRESETS.find(p => p.id === presetId) ?? PRESETS[0];
     const utt = new SpeechSynthesisUtterance(textRef.current);
 
+    // Only assign a voice when one is found — assigning null explicitly
+    // causes silent failure on some Android Chrome builds.
     const voice = pickBestVoice(voicesRef.current);
     if (voice) utt.voice = voice;
 
@@ -118,16 +120,21 @@ export function TTSPlayer({ headline, dek, bodyHtml }: TTSPlayerProps) {
       clearResumeTimer();
     };
 
-    utt.onstart = () => setIsPlaying(true);
-
     utteranceRef.current = utt;
-    synth.speak(utt);
 
-    resumeTimerRef.current = setInterval(() => {
-      if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
-        window.speechSynthesis.resume();
-      }
-    }, 10000);
+    // Android Chrome: cancel() needs a tick to flush before speak() is queued,
+    // otherwise the new utterance silently fails. onstart is also unreliable on
+    // Android, so set isPlaying optimistically here instead.
+    setTimeout(() => {
+      setIsPlaying(true);
+      synth.speak(utt);
+
+      resumeTimerRef.current = setInterval(() => {
+        if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      }, 10000);
+    }, 50);
   }
 
   function handleOpen() {
